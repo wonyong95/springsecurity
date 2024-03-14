@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 .loginPage("/loginForm") // 사용자 지정 로그인 페이지 URL 설정
                                 //.defaultSuccessUrl("/view/dashboard", true) // 성공 시 대시보드로 이동
                                 //.permitAll() // 로그인 페이지는 모든 사용자에게 허용됩니다
+                                .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진해줍니다
+                                .defaultSuccessUrl("/" , true) // ture는 항상 지정된 URL로 리다이렉트 할것인지 여부, false로 설정하면 사용자가 직전에 접근한 페이지로 리다이렉트
                 );
 
 
