@@ -21,10 +21,9 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create #create update none
+      ddl-auto: update #create update none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-<<<<<<< HEAD
     show-sql: true
 
 
@@ -39,6 +38,3 @@ spring:
               - email
               - profile
 
-=======
-    show-sql: true
->>>>>>> parent of 444d78d (FEAT: 구글 api 콘솔 oauth2추가)
