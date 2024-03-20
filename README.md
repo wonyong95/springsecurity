@@ -120,3 +120,23 @@ UserDetails, OAuth2User -> PrincipalDetails를 부모로두고 Authentication에
         return "OAuth 세션 정보 확인하기";
     }
 ```
+
+### 구글 로그인 및 자동회원가입 
+
+BCryptPasswordEncoder 의존성 문제로 CustomBCryptPasswordEncoder 클래스 생성함
+```java
+@Component // @Component 스캔하기위해 추가
+public class CustomBCryptPasswordEncoder extends BCryptPasswordEncoder {
+}
+
+```
+
+- user -> userinfo 로변경 
+- 이유: 겟매핑전에 프린트문이 출력됨
+```java
+    @GetMapping("/userinfo")
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principalDetails){
+        System.out.println("principalDetails: "+principalDetails.getUser());
+        return "user";
+    }
+```
