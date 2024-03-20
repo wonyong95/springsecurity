@@ -1,5 +1,10 @@
 package com.cos.demo.config;
 
+// 1.코드받기(인증) 2.엑세스토큰(권한) 3.사용자프로필 정보를 가져오고 4.그 정보를 토대로 회원가입을 자동으로 진행시키기도 함
+// 4-2 (이메일,전화번호,이름,아이디) 쇼핑몰 -> (집주소),백화점몰 -> (vip등급,일반등급)
+
+import com.cos.demo.config.auth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -14,6 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity //스프링 시큐리티 필터가 스프링 필터체인에 등록
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true) // secured 어노테이션 활성화, preAuthorize,postAuthorize 어노테이션 활성화
 public class SecurityConfig {
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public BCryptPasswordEncoder encodePwd(){
@@ -53,9 +61,19 @@ public class SecurityConfig {
                                 //.permitAll() // 로그인 페이지는 모든 사용자에게 허용됩니다
                                 .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진해줍니다
                                 .defaultSuccessUrl("/" , true) // ture는 항상 지정된 URL로 리다이렉트 할것인지 여부, false로 설정하면 사용자가 직전에 접근한 페이지로 리다이렉트
-                );
 
+                )
+                .oauth2Login(login ->
+                        login
+                                .loginPage("/loginForm")
+                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                        .userService(principalOauth2UserService))
+                                .defaultSuccessUrl("/" , true)
 
+                                // 구글 로그인이 완료된 뒤의 후처리가 필요함. Tip.코드X, (엑세스토큰+사용자프로필정보 O)
+                        );
+
+        // 회원가입을 강제로 진행해볼 예정
         return http.build(); // 구성된 SecurityFilterChain 반환
     }
 
