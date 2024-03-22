@@ -2,6 +2,7 @@ package com.cos.demo.config.auth;
 
 import com.cos.demo.config.auth.provider.FacebookUserinfo;
 import com.cos.demo.config.auth.provider.GoogleUserinfo;
+import com.cos.demo.config.auth.provider.NaverUserinfo;
 import com.cos.demo.config.auth.provider.OAuth2Userinfo;
 import com.cos.demo.model.User;
 import com.cos.demo.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
@@ -42,20 +45,24 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         }else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")){
             System.out.println("페이스북 로그인 요청");
             oAuth2Userinfo = new FacebookUserinfo(oauth2User.getAttributes());
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
+            System.out.println("네이버 로그인 요청");
+            oAuth2Userinfo = new NaverUserinfo((Map)oauth2User.getAttributes().get("response"));
         }else{
-            System.out.println("우리는 구글과 페이스북만 지원해요");
+            System.out.println("우리는 네이버와 구글과 페이스북만 지원해요");
         }
 
         String provider = oAuth2Userinfo.getProvider();
         String providerId = oAuth2Userinfo.getProviderId();
         String username = provider+"_"+providerId; //google_Id;
         String password = customBCryptPasswordEncoder.encode("겟인데어");
-        String email = oauth2User.getAttribute("email");
+        String email = oAuth2Userinfo.getEmail();
         String role = "ROLE_USER";
 
         User userEntity = userRepository.findByUsername(username);
 
         if(userEntity == null) {
+            System.out.println("OAuth 로그인이 최초입니다");
             userEntity = User.builder()
                     .username(username)
                     .password(password)
