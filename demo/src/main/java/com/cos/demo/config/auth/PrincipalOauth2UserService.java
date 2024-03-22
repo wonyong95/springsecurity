@@ -1,5 +1,8 @@
 package com.cos.demo.config.auth;
 
+import com.cos.demo.config.auth.provider.FacebookUserinfo;
+import com.cos.demo.config.auth.provider.GoogleUserinfo;
+import com.cos.demo.config.auth.provider.OAuth2Userinfo;
 import com.cos.demo.model.User;
 import com.cos.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +34,20 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // userRequest 정보 -> 회원프로필을 받아야함(loadUser함수) -> 구글로부터 회원프로필 받아준다
         System.out.println("getAttributes: "+oauth2User.getAttributes());
 
-        String provider = userRequest.getClientRegistration().getClientName(); // google
-        String providerId = oauth2User.getAttribute("sub");
+        // 회원가입 강제로 진행해볼예정
+        OAuth2Userinfo oAuth2Userinfo = null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")){
+            System.out.println("구글 로그인 요청");
+            oAuth2Userinfo = new GoogleUserinfo(oauth2User.getAttributes());
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")){
+            System.out.println("페이스북 로그인 요청");
+            oAuth2Userinfo = new FacebookUserinfo(oauth2User.getAttributes());
+        }else{
+            System.out.println("우리는 구글과 페이스북만 지원해요");
+        }
+
+        String provider = oAuth2Userinfo.getProvider();
+        String providerId = oAuth2Userinfo.getProviderId();
         String username = provider+"_"+providerId; //google_Id;
         String password = customBCryptPasswordEncoder.encode("겟인데어");
         String email = oauth2User.getAttribute("email");
@@ -50,6 +65,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .build();
             userRepository.save(userEntity);
+        }else{
+            System.out.println("로그인을 이미한적 있습니다. 당신은 자동회원가입이 되어있습니다");
         }
 
         return new PrincipalDetails(userEntity, oauth2User.getAttributes());
