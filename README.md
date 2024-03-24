@@ -140,3 +140,45 @@ public class CustomBCryptPasswordEncoder extends BCryptPasswordEncoder {
         return "user";
     }
 ```
+
+### JWT 
+
+1. JWT 
+   - JSON WEB TOKEN
+  
+2. session
+   - 최초 Request 요청시 Response .html의 Header 쿠기에 SessionID를 부여받음 이후 요청시 header에 SessionID 추가하여 요청
+
+- sessionID 삭제 방법
+  -  서버쪽에서 session 삭제 (강제)
+  - 사용자 브라우저 종료
+  - 특정 시간 이후 서버 sessionID 만료 (평균 30분)
+- 단점
+  - 동접자 수가 많으면 서버에 부하가 걸림 -> 로드 밸런싱 (애플리케이션을 지원하는 리소스 풀 전체에 네트워크 트래픽을 균등하게 배포하는 방법)
+  - 해결하기 위해 JWT를 사용함
+
+3. TCP
+
+- 통신: OSI 7계층
+- 응용
+  - 사진(100)
+- 프리젠테이션
+  - 암호화, 압축
+- 세션계층
+  - 인층 체크
+- 트랜스포트
+  - TCP/UDP
+  - TCP: 웹
+  - UDP: 사람이 이해할수있는것(전화)
+- 네트워크
+  - IP
+- 데이터링크
+  - LAN, WAN
+- 물리
+  - 연결선
+
+4. CIA
+- 기밀성 무결성(변경) 가용성
+- 문서를 암호화해서 전달해 주어야 함
+  - 열쇠 전달 문제
+  - 문서 누구로부터 왔는가
